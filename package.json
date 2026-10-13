@@ -1,9 +1,14 @@
 {
   "name": "bogue-react-node",
   "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
-    "install:all": "npm install --prefix server && npm install --prefix client"
+    "dev": "concurrently \"npm run dev --workspace=bogue-api\" \"npm run dev --workspace=bogue-client\"",
+    "build": "npm run build --workspace=bogue-client",
+    "start": "npm run start --workspace=bogue-api"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

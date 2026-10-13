@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getProduct } from "../api/products.js";
+import { getProductImageUrl } from "../api/imageUrl.js";
 
 export function ProductPage() {
   const { id } = useParams();
@@ -15,7 +16,7 @@ export function ProductPage() {
   if (!product) return <section className="page-section"><p>Loading product…</p></section>;
 
   return <section className="product-detail">
-    <img src={`/uploads/${encodeURIComponent(product.image)}`} alt={product.name} />
+    <img src={getProductImageUrl(product.image)} alt={product.name} />
     <div>
       <p className="category-label">{product.category}</p>
       <h1>{product.name}</h1>

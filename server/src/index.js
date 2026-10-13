@@ -6,10 +6,10 @@ import { productsRouter } from "./routes/products.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 5000);
-const rootDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const serverDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 app.use(express.json());
-app.use("/uploads", express.static(path.join(rootDirectory, "uploads")));
+app.use("/uploads", express.static(path.join(serverDirectory, "uploads")));
 
 app.get("/api/health", async (_req, res, next) => {
   try {
