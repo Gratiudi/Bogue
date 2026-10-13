@@ -10,6 +10,8 @@ The original PHP application remains in `php/`, `admin/`, and `includes/`. The m
 
 Use `npm.cmd run build` to build the client and `npm.cmd start` to start the API.
 
+To enable the React contact form, copy `client/.env.example` to `client/.env` and set `VITE_WEB3FORMS_ACCESS_KEY` to the Web3Forms access key used by the PHP contact form. Restart Vite after changing client environment variables.
+
 Open `http://localhost:5173`. The React app proxies `/api` and `/uploads` to the Express API on port 5000.
 
 If `/api/health` returns an error, start MySQL first or update `DB_HOST`, `DB_PORT`, `DB_USER`, and `DB_PASSWORD` in `server/.env`. The API does not start or manage MySQL for you.
