@@ -7,10 +7,11 @@ async function request(path) {
   return response.json();
 }
 
-export function getProducts({ categories, limit } = {}) {
+export function getProducts({ categories, limit, order } = {}) {
   const query = new URLSearchParams();
   if (categories?.length) query.set("categories", categories.join(","));
   if (limit) query.set("limit", String(limit));
+  if (order) query.set("order", order);
   const suffix = query.size ? `?${query}` : "";
   return request(`/api/products${suffix}`);
 }

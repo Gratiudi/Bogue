@@ -15,6 +15,19 @@ nav { max-width: 1200px; display: flex; justify-content: space-between; align-it
 .hero a, .button { display: inline-block; width: fit-content; margin: auto; padding: .7rem 1.1rem; border-radius: 5px; color: #fff; background: #574747; text-decoration: none; }
 .page-section { max-width: 1200px; margin: 2.5rem auto; padding: 0 1.25rem; }
 .page-section > h1 { text-align: center; }
+.home-categories { max-width: 1200px; margin: 0 auto 3rem; padding: 0 1.25rem; text-align: center; }
+.home-categories > h2, .home-benefits > h2 { margin-bottom: 1.5rem; }
+.home-category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+.home-category-card { display: flex; flex-direction: column; gap: .75rem; padding: 16px; overflow: hidden; border-radius: 10px; background: #fff; box-shadow: 0 4px 12px rgb(0 0 0 / 10%); text-decoration: none; }
+.home-category-card img { width: 100%; height: 350px; object-fit: cover; border-radius: 8px; transition: transform .3s ease; }
+.home-category-card:hover img { transform: scale(1.04); }
+.home-category-card h3 { margin: 0; color: #463131; font-size: 1.15rem; }
+.home-benefits { max-width: 1200px; margin: 0 auto; padding: 1rem 1.25rem 0; text-align: center; }
+.home-benefit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+.home-benefit-card { padding: 1.5rem; border-radius: 10px; background: #fff; box-shadow: 0 4px 12px rgb(0 0 0 / 8%); }
+.home-benefit-card img { width: 64px; height: 64px; object-fit: contain; }
+.home-benefit-card h3 { margin: .75rem 0 .25rem; }
+.home-benefit-card p { margin: 0; color: #555; }
 .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; }
 .product-card { padding: 10px; text-align: center; border-radius: 10px; box-shadow: 0 4px 12px rgb(0 0 0 / 10%); overflow: hidden; }
 .product-card img { width: 100%; height: 350px; object-fit: cover; border-radius: 8px; transition: transform .3s ease; }

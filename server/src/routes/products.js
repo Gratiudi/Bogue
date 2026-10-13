@@ -10,6 +10,7 @@ productsRouter.get("/", async (req, res, next) => {
       .map((category) => category.trim())
       .filter(Boolean);
     const limit = Math.min(Math.max(Number(req.query.limit) || 100, 1), 100);
+    const order = String(req.query.order ?? "").toLowerCase() === "asc" ? "ASC" : "DESC";
 
     let sql = "SELECT id, name, description, price, image, category FROM products";
     const values = [];
@@ -17,7 +18,7 @@ productsRouter.get("/", async (req, res, next) => {
       sql += " WHERE category IN (?)";
       values.push(categories);
     }
-    sql += " ORDER BY id DESC LIMIT ?";
+    sql += ` ORDER BY id ${order} LIMIT ?`;
     values.push(limit);
 
     const [products] = await db.query(sql, values);
