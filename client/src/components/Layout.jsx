@@ -1,6 +1,12 @@
 import { Link, NavLink } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext.jsx";
 
 export function Layout({ children }) {
+  const { user, loading, logout } = useAuth();
+  async function handleLogout() {
+    try { await logout(); } catch (error) { console.error("Could not sign out:", error); }
+  }
+
   return (
     <>
       <header className="site-header">
@@ -13,6 +19,7 @@ export function Layout({ children }) {
             <NavLink to="/blog">Blog</NavLink>
             <NavLink to="/about">About</NavLink>
             <NavLink to="/contact">Contact</NavLink>
+            {loading ? null : user ? <><NavLink to="/account">My Account</NavLink><button className="nav-button" type="button" onClick={handleLogout}>Sign out</button></> : <><NavLink to="/login">Sign in</NavLink><NavLink to="/register">Create account</NavLink></>}
           </div>
         </nav>
       </header>

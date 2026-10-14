@@ -6,6 +6,7 @@ import { ProductPage } from "./pages/ProductPage.jsx";
 import { AboutPage } from "./pages/AboutPage.jsx";
 import { BlogPage } from "./pages/BlogPage.jsx";
 import { ContactPage } from "./pages/ContactPage.jsx";
+import { AccountFormPage, AccountPage } from "./pages/AccountPages.jsx";
 
 const categoryMap = {
   tops: { title: "Tops and Blouses", categories: ["Tops", "Blouses"] },
@@ -29,6 +30,9 @@ export default function App() {
     <Route path="/about" element={<AboutPage />} />
     <Route path="/blog" element={<BlogPage />} />
     <Route path="/contact" element={<ContactPage />} />
+    <Route path="/register" element={<AccountFormPage mode="register" />} />
+    <Route path="/login" element={<AccountFormPage mode="login" />} />
+    <Route path="/account" element={<AccountPage />} />
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes></Layout>;
 }

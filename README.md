@@ -24,6 +24,6 @@ Cloudinary credentials are used only by the server-side migration. Product image
 
 ## Current migration scope
 
-The public catalogue is migrated: home/featured products, all products, category pages, and product details. The API reads the existing `clothing_store.products` table. Product images can use Cloudinary URLs after migration, with local images from `server/uploads/` available as a fallback.
+The public catalogue is migrated: home/featured products, all products, category pages, and product details. The React app also has account registration, sign-in, sign-out, and a basic account page. Authentication uses the configured MySQL database; the API creates its `bogue_users` and `bogue_sessions` tables on the first auth request, so the configured database user needs permission to create tables. Passwords are stored as salted scrypt hashes, while browser sessions use random tokens stored as hashes in MySQL and sent in an HTTP-only cookie.
 
-Authentication, cart, checkout, and administration remain in PHP for now and should be migrated next, in that order.
+Order history, cart, checkout, and administration are not implemented in the React app yet. The account page currently displays the registered name and email.
