@@ -4,7 +4,7 @@ The original PHP application remains in `php/`, `admin/`, and `includes/`. The m
 
 ## First-time setup
 
-1. Copy `server/.env.example` to `server/.env` and supply the MySQL credentials if they differ from the existing PHP settings. The defaults match `includes/db.php`: MySQL at `localhost:3307`, database `clothing_store`, user `root`, and an empty password.
+1. Copy `server/.env.example` to `server/.env` and set the MySQL connection values for the database you want this app to use.
 2. Run `npm.cmd install` in the repository root. npm workspaces install the client and server dependencies together.
 3. Run `npm.cmd run dev` to start the client and API.
 
@@ -24,6 +24,6 @@ Cloudinary credentials are used only by the server-side migration. Product image
 
 ## Current migration scope
 
-The public catalogue is migrated: home/featured products, all products, category pages, and product details. The React app also has account registration, sign-in, sign-out, and a basic account page. Authentication uses the configured MySQL database; the API creates its `bogue_users` and `bogue_sessions` tables on the first auth request, so the configured database user needs permission to create tables. Passwords are stored as salted scrypt hashes, while browser sessions use random tokens stored as hashes in MySQL and sent in an HTTP-only cookie.
+The public catalogue is migrated: home/featured products, all products, category pages, and product details. The React app has independent customer registration, sign-in, sign-out, and an account page. Customer accounts live in the React app's `customers` table, separate from the PHP project's data. Passwords are bcrypt-hashed. Sessions use random opaque values in HTTP-only cookies; only a SHA-256 hash of each session value is stored in `customer_sessions`, allowing sessions to be revoked on logout. A separate CSRF token is required for logout and future state-changing account actions. The API creates these two tables on the first auth request; the configured database account therefore needs table-creation permission.
 
 Order history, cart, checkout, and administration are not implemented in the React app yet. The account page currently displays the registered name and email.

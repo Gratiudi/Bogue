@@ -6,7 +6,7 @@ export function AccountFormPage({ mode }) {
   const isRegister = mode === "register";
   const { user, loading, login, register } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -17,6 +17,9 @@ export function AccountFormPage({ mode }) {
     setError("");
     setSubmitting(true);
     try {
+      if (isRegister && form.password !== form.confirmPassword) {
+        throw new Error("Passwords do not match.");
+      }
       if (isRegister) await register(form.name, form.email, form.password);
       else await login(form.email, form.password);
       navigate("/account", { replace: true });
@@ -35,12 +38,19 @@ export function AccountFormPage({ mode }) {
         {isRegister && <label>Full name
           <input autoComplete="name" required minLength={2} maxLength={120} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
         </label>}
-        <label>Email address
+        {isRegister && <label>Email address
           <input type="email" autoComplete="email" required maxLength={254} value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} />
         </label>
+        }
+        {!isRegister && <label>Email address
+          <input type="email" autoComplete="email" required maxLength={254} value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} />
+        </label>}
         <label>Password
-          <input type="password" autoComplete={isRegister ? "new-password" : "current-password"} required minLength={isRegister ? 8 : undefined} maxLength={128} value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} />
+          <input type="password" autoComplete={isRegister ? "new-password" : "current-password"} required minLength={isRegister ? 8 : undefined} maxLength={72} value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} />
         </label>
+        {isRegister && <label>Confirm password
+          <input type="password" autoComplete="new-password" required minLength={8} maxLength={72} value={form.confirmPassword} onChange={(event) => setForm({ ...form, confirmPassword: event.target.value })} />
+        </label>}
         {error && <p className="form-status error" role="alert">{error}</p>}
         <button type="submit" disabled={submitting}>{submitting ? "Please wait…" : isRegister ? "Create account" : "Sign in"}</button>
         <p className="account-switch">

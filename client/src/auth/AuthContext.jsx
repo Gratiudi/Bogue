@@ -15,13 +15,19 @@ async function authRequest(path, options = {}) {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [csrfToken, setCsrfToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
     authRequest("me")
-      .then(({ user: currentUser }) => { if (active) setUser(currentUser); })
-      .catch(() => { if (active) setUser(null); })
+      .then(({ user: currentUser, csrfToken: currentCsrfToken }) => {
+        if (active) {
+          setUser(currentUser);
+          setCsrfToken(currentCsrfToken);
+        }
+      })
+      .catch(() => { if (active) { setUser(null); setCsrfToken(null); } })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, []);
@@ -32,18 +38,21 @@ export function AuthProvider({ children }) {
     async login(email, password) {
       const result = await authRequest("login", { method: "POST", body: JSON.stringify({ email, password }) });
       setUser(result.user);
+      setCsrfToken(result.csrfToken);
       return result.user;
     },
     async register(name, email, password) {
       const result = await authRequest("register", { method: "POST", body: JSON.stringify({ name, email, password }) });
       setUser(result.user);
+      setCsrfToken(result.csrfToken);
       return result.user;
     },
     async logout() {
-      await authRequest("logout", { method: "POST" });
+      await authRequest("logout", { method: "POST", headers: { "X-CSRF-Token": csrfToken } });
       setUser(null);
+      setCsrfToken(null);
     }
-  }), [user, loading]);
+  }), [user, loading, csrfToken]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
