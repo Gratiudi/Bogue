@@ -9,25 +9,25 @@ const SESSION_DAYS = 30;
 const SESSION_MAX_AGE = SESSION_DAYS * 24 * 60 * 60 * 1000;
 
 let schemaReady;
-function ensureSchema() {
+export function ensureCustomerSchema() {
   if (!schemaReady) {
     schemaReady = (async () => {
-      await db.query(`CREATE TABLE IF NOT EXISTS customers (
+      await db.query(`CREATE TABLE IF NOT EXISTS bogue_customers (
         id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(120) NOT NULL,
         email VARCHAR(254) NOT NULL UNIQUE,
         password_hash VARCHAR(255) NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
-      await db.query(`CREATE TABLE IF NOT EXISTS customer_sessions (
+      await db.query(`CREATE TABLE IF NOT EXISTS bogue_customer_sessions (
         token_hash CHAR(64) NOT NULL PRIMARY KEY,
         csrf_token CHAR(64) NOT NULL,
         customer_id BIGINT UNSIGNED NOT NULL,
         expires_at DATETIME NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        INDEX idx_customer_sessions_expiry (expires_at),
-        INDEX idx_customer_sessions_customer (customer_id),
-        CONSTRAINT fk_customer_sessions_customer FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+        INDEX idx_bogue_customer_sessions_expiry (expires_at),
+        INDEX idx_bogue_customer_sessions_customer (customer_id),
+        CONSTRAINT fk_bogue_customer_sessions_customer FOREIGN KEY (customer_id) REFERENCES bogue_customers(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
     })().catch((error) => {
       schemaReady = undefined;
@@ -61,12 +61,12 @@ function clearSessionCookie(res) {
 }
 
 async function createSession(res, customerId) {
-  await db.execute("DELETE FROM customer_sessions WHERE expires_at <= NOW()");
+  await db.execute("DELETE FROM bogue_customer_sessions WHERE expires_at <= NOW()");
   const token = randomBytes(32).toString("base64url");
   const csrfToken = randomBytes(32).toString("hex");
   const expiresAt = new Date(Date.now() + SESSION_MAX_AGE);
   await db.execute(
-    "INSERT INTO customer_sessions (token_hash, csrf_token, customer_id, expires_at) VALUES (?, ?, ?, ?)",
+    "INSERT INTO bogue_customer_sessions (token_hash, csrf_token, customer_id, expires_at) VALUES (?, ?, ?, ?)",
     [hash(token), csrfToken, customerId, expiresAt]
   );
   setSessionCookie(res, token);
@@ -86,7 +86,7 @@ function csrfMatches(expected, provided) {
 
 authRouter.post("/register", async (req, res, next) => {
   try {
-    await ensureSchema();
+    await ensureCustomerSchema();
     const name = typeof req.body?.name === "string" ? req.body.name.trim() : "";
     const email = typeof req.body?.email === "string" ? req.body.email.trim().toLowerCase() : "";
     const password = typeof req.body?.password === "string" ? req.body.password : "";
@@ -102,7 +102,7 @@ authRouter.post("/register", async (req, res, next) => {
 
     const passwordHash = await bcrypt.hash(password, 12);
     const [result] = await db.execute(
-      "INSERT INTO customers (name, email, password_hash) VALUES (?, ?, ?)",
+      "INSERT INTO bogue_customers (name, email, password_hash) VALUES (?, ?, ?)",
       [name, email, passwordHash]
     );
     const customer = { id: result.insertId, name, email };
@@ -118,11 +118,11 @@ authRouter.post("/register", async (req, res, next) => {
 
 authRouter.post("/login", async (req, res, next) => {
   try {
-    await ensureSchema();
+    await ensureCustomerSchema();
     const email = typeof req.body?.email === "string" ? req.body.email.trim().toLowerCase() : "";
     const password = typeof req.body?.password === "string" ? req.body.password : "";
     const [customers] = await db.execute(
-      "SELECT id, name, email, password_hash FROM customers WHERE email = ? LIMIT 1",
+      "SELECT id, name, email, password_hash FROM bogue_customers WHERE email = ? LIMIT 1",
       [email]
     );
     const customer = customers[0];
@@ -139,12 +139,12 @@ authRouter.post("/login", async (req, res, next) => {
 
 authRouter.get("/me", async (req, res, next) => {
   try {
-    await ensureSchema();
+    await ensureCustomerSchema();
     const token = req.cookies?.[SESSION_COOKIE];
     if (!token) return res.json({ user: null, csrfToken: null });
     const [sessions] = await db.execute(
       `SELECT c.id, c.name, c.email, s.csrf_token
-       FROM customer_sessions s JOIN customers c ON c.id = s.customer_id
+       FROM bogue_customer_sessions s JOIN bogue_customers c ON c.id = s.customer_id
        WHERE s.token_hash = ? AND s.expires_at > NOW() LIMIT 1`,
       [hash(token)]
     );
@@ -161,17 +161,17 @@ authRouter.get("/me", async (req, res, next) => {
 
 authRouter.post("/logout", async (req, res, next) => {
   try {
-    await ensureSchema();
+    await ensureCustomerSchema();
     const token = req.cookies?.[SESSION_COOKIE];
     if (token) {
       const [sessions] = await db.execute(
-        "SELECT csrf_token FROM customer_sessions WHERE token_hash = ? AND expires_at > NOW() LIMIT 1",
+        "SELECT csrf_token FROM bogue_customer_sessions WHERE token_hash = ? AND expires_at > NOW() LIMIT 1",
         [hash(token)]
       );
       if (sessions[0] && !csrfMatches(sessions[0].csrf_token, req.get("X-CSRF-Token"))) {
         return res.status(403).json({ message: "Your session security check failed. Refresh and try again." });
       }
-      await db.execute("DELETE FROM customer_sessions WHERE token_hash = ?", [hash(token)]);
+      await db.execute("DELETE FROM bogue_customer_sessions WHERE token_hash = ?", [hash(token)]);
     }
     clearSessionCookie(res);
     res.json({ user: null, csrfToken: null });
@@ -179,3 +179,34 @@ authRouter.post("/logout", async (req, res, next) => {
     next(error);
   }
 });
+
+export async function requireCustomer(req, res, next) {
+  try {
+    await ensureCustomerSchema();
+    const token = req.cookies?.[SESSION_COOKIE];
+    if (!token) return res.status(401).json({ message: "Sign in to continue." });
+    const [sessions] = await db.execute(
+      `SELECT c.id, c.name, c.email, s.token_hash, s.csrf_token
+       FROM bogue_customer_sessions s JOIN bogue_customers c ON c.id = s.customer_id
+       WHERE s.token_hash = ? AND s.expires_at > NOW() LIMIT 1`,
+      [hash(token)]
+    );
+    const session = sessions[0];
+    if (!session) {
+      clearSessionCookie(res);
+      return res.status(401).json({ message: "Your session expired. Please sign in again." });
+    }
+    req.customer = publicCustomer(session);
+    req.customerSession = session;
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export function requireCsrf(req, res, next) {
+  if (!req.customerSession || !csrfMatches(req.customerSession.csrf_token, req.get("X-CSRF-Token"))) {
+    return res.status(403).json({ message: "Your session security check failed. Refresh and try again." });
+  }
+  next();
+}

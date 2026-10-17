@@ -3,13 +3,20 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 const AuthContext = createContext(null);
 
 async function authRequest(path, options = {}) {
-  const response = await fetch(`/api/auth/${path}`, {
-    ...options,
-    credentials: "include",
-    headers: { "Content-Type": "application/json", ...options.headers }
-  });
+  let response;
+  try {
+    response = await fetch(`/api/auth/${path}`, {
+      ...options,
+      credentials: "include",
+      headers: { "Content-Type": "application/json", ...options.headers }
+    });
+  } catch {
+    throw new Error("We couldn’t reach the store just now. Please check your connection and try again.");
+  }
   const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.message ?? "Unable to complete the account request.");
+  if (!response.ok) {
+    throw new Error(payload.message ?? "We couldn’t complete that request right now. Please try again shortly. If you may already have created an account, try signing in.");
+  }
   return payload;
 }
 
@@ -34,6 +41,7 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(() => ({
     user,
+    csrfToken,
     loading,
     async login(email, password) {
       const result = await authRequest("login", { method: "POST", body: JSON.stringify({ email, password }) });

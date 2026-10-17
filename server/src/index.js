@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import { db } from "./db.js";
 import { productsRouter } from "./routes/products.js";
 import { authRouter } from "./routes/auth.js";
+import { cartRouter } from "./routes/cart.js";
+import { ordersRouter } from "./routes/orders.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 5000);
@@ -35,8 +37,14 @@ app.get("/api/health", async (_req, res, next) => {
   }
 });
 
+app.use("/api", (_req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
 app.use("/api/products", productsRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/orders", ordersRouter);
 
 app.use((error, _req, res, _next) => {
   console.error(error);

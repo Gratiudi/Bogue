@@ -1,8 +1,10 @@
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
+import { useCart } from "../cart/CartContext.jsx";
 
 export function Layout({ children }) {
   const { user, loading, logout } = useAuth();
+  const { cart } = useCart();
   async function handleLogout() {
     try { await logout(); } catch (error) { console.error("Could not sign out:", error); }
   }
@@ -19,6 +21,7 @@ export function Layout({ children }) {
             <NavLink to="/blog">Blog</NavLink>
             <NavLink to="/about">About</NavLink>
             <NavLink to="/contact">Contact</NavLink>
+            <NavLink to="/cart">Cart{user && cart.itemCount > 0 ? ` (${cart.itemCount})` : ""}</NavLink>
             {loading ? null : user ? <><NavLink to="/account">My Account</NavLink><button className="nav-button" type="button" onClick={handleLogout}>Sign out</button></> : <><NavLink to="/login">Sign in</NavLink><NavLink to="/register">Create account</NavLink></>}
           </div>
         </nav>

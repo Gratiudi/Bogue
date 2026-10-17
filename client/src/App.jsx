@@ -7,6 +7,8 @@ import { AboutPage } from "./pages/AboutPage.jsx";
 import { BlogPage } from "./pages/BlogPage.jsx";
 import { ContactPage } from "./pages/ContactPage.jsx";
 import { AccountFormPage, AccountPage } from "./pages/AccountPages.jsx";
+import { CartPage } from "./pages/CartPage.jsx";
+import { CheckoutPage } from "./pages/CheckoutPage.jsx";
 
 const categoryMap = {
   tops: { title: "Tops and Blouses", categories: ["Tops", "Blouses"] },
@@ -33,6 +35,8 @@ export default function App() {
     <Route path="/register" element={<AccountFormPage mode="register" />} />
     <Route path="/login" element={<AccountFormPage mode="login" />} />
     <Route path="/account" element={<AccountPage />} />
+    <Route path="/cart" element={<CartPage />} />
+    <Route path="/checkout" element={<CheckoutPage />} />
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes></Layout>;
 }
