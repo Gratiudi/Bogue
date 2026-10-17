@@ -13,24 +13,6 @@ body {
 a {
   color: inherit;
 }
-.hero {
-  min-height: 50vh;
-  padding: 2rem;
-  display: grid;
-  place-content: center;
-  gap: 1rem;
-  text-align: center;
-  background: url("/uploads/heroBG.jpg") center / cover;
-}
-.hero h1 {
-  margin: 0;
-  font-size: clamp(2rem, 5vw, 3rem);
-}
-.hero p {
-  max-width: 620px;
-  margin: 0 auto;
-}
-.hero a,
 .button {
   display: inline-block;
   width: fit-content;
@@ -48,110 +30,6 @@ a {
 }
 .page-section > h1 {
   text-align: center;
-}
-.home-categories {
-  max-width: 1200px;
-  margin: 0 auto 3rem;
-  padding: 0 1.25rem;
-  text-align: center;
-}
-.home-categories > h2,
-.home-benefits > h2 {
-  margin-bottom: 1.5rem;
-}
-.home-category-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-}
-.home-category-card {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 16px;
-  overflow: hidden;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
-  text-decoration: none;
-}
-.home-category-card img {
-  width: 100%;
-  height: 350px;
-  object-fit: cover;
-  border-radius: 8px;
-  transition: transform 0.3s ease;
-}
-.home-category-card:hover img {
-  transform: scale(1.04);
-}
-.home-category-card h3 {
-  margin: 0;
-  color: #463131;
-  font-size: 1.15rem;
-}
-.home-benefits {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem 1.25rem 0;
-  text-align: center;
-}
-.home-benefit-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-}
-.home-benefit-card {
-  padding: 1.5rem;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
-}
-.home-benefit-card img {
-  width: 64px;
-  height: 64px;
-  object-fit: contain;
-}
-.home-benefit-card h3 {
-  margin: 0.75rem 0 0.25rem;
-}
-.home-benefit-card p {
-  margin: 0;
-  color: #555;
-}
-.catalog-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  gap: 1rem;
-  margin: 0 0 1.5rem;
-  padding: 1rem;
-  border-radius: 10px;
-  background: #f6f6f7;
-}
-.catalog-toolbar label {
-  display: grid;
-  flex: 1 1 220px;
-  gap: 0.35rem;
-  font-weight: 600;
-}
-.catalog-toolbar input,
-.catalog-toolbar select {
-  min-height: 2.75rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid #c9c4c4;
-  border-radius: 7px;
-  background: #fff;
-  color: #333;
-  font: inherit;
-}
-.catalog-count {
-  flex: 0 0 auto;
-  margin: 0 0 0.55rem auto;
-  color: #555;
-}
-.error-message {
-  color: #b00020;
 }
 .site-footer {
   margin-top: 3rem;

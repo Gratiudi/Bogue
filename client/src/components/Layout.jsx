@@ -4,9 +4,9 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import { useCart } from "../cart/CartContext.jsx";
 
 const navigationLinkClass = ({ isActive }) =>
-  `block w-full rounded-lg px-3 py-2 text-sm font-medium transition-colors md:w-auto ${
+  `flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors md:w-auto ${
     isActive
-      ? "bg-stone-100 text-stone-950"
+      ? "bg-rose-50 text-rose-950"
       : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
   }`;
 
@@ -22,10 +22,14 @@ export function Layout({ children }) {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-stone-200 bg-white/95 shadow-sm backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-stone-200/80 bg-[#fcfaf7]/95 shadow-sm backdrop-blur">
+        <div className="bg-stone-950 px-4 py-2 text-center text-[10px] font-medium uppercase tracking-[0.18em] text-stone-100 sm:text-xs">
+          A personal edit for every day <span className="mx-2 text-rose-300" aria-hidden="true">✳</span> Discover Bogue
+        </div>
         <nav aria-label="Main navigation" className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-6 px-4 py-3 sm:px-6 lg:px-8">
-          <Link className="rounded text-2xl font-bold tracking-tight text-stone-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-stone-700" to="/" onClick={() => setMenuOpen(false)}>
-            Bogue
+          <Link className="flex flex-col rounded text-stone-950 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose-900" to="/" onClick={() => setMenuOpen(false)}>
+            <span className="font-serif text-[1.7rem] font-semibold leading-none tracking-[0.12em]">BOGUE</span>
+            <span className="mt-1 text-[9px] font-medium uppercase tracking-[0.23em] text-stone-500">Fashion, your way</span>
           </Link>
           <button
             className="inline-flex size-11 items-center justify-center rounded-lg border border-stone-300 text-stone-700 transition hover:bg-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-700 md:hidden"
@@ -46,13 +50,16 @@ export function Layout({ children }) {
             <NavLink className={navigationLinkClass} onClick={() => setMenuOpen(false)} to="/blog">Blog</NavLink>
             <NavLink className={navigationLinkClass} onClick={() => setMenuOpen(false)} to="/about">About</NavLink>
             <NavLink className={navigationLinkClass} onClick={() => setMenuOpen(false)} to="/contact">Contact</NavLink>
-            <NavLink className={navigationLinkClass} onClick={() => setMenuOpen(false)} to="/cart">Cart{user && cart.itemCount > 0 ? ` (${cart.itemCount})` : ""}</NavLink>
+            <NavLink className={navigationLinkClass} onClick={() => setMenuOpen(false)} to="/cart">
+              <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M4 8h16l-1.2 12H5.2L4 8Z" /><path strokeLinecap="round" strokeLinejoin="round" d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+              Bag{user && cart.itemCount > 0 ? ` (${cart.itemCount})` : ""}
+            </NavLink>
             {loading ? null : user ? <>
               <NavLink className={navigationLinkClass} onClick={() => setMenuOpen(false)} to="/account">My Account</NavLink>
               <button className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-700 md:w-auto" type="button" onClick={handleLogout}>Sign out</button>
             </> : <>
               <NavLink className={navigationLinkClass} onClick={() => setMenuOpen(false)} to="/login">Sign in</NavLink>
-              <NavLink className={`${navigationLinkClass({ isActive: false })} md:bg-stone-900 md:text-white md:hover:bg-stone-700 md:hover:text-white`} onClick={() => setMenuOpen(false)} to="/register">Create account</NavLink>
+              <NavLink className={`${navigationLinkClass({ isActive: false })} md:bg-stone-950 md:text-white md:hover:bg-rose-900 md:hover:text-white`} onClick={() => setMenuOpen(false)} to="/register">Create account</NavLink>
             </>}
           </div>
         </nav>
