@@ -52,7 +52,7 @@ export function HomePage() {
       </div>
     </section>
 
-    <ProductListPage title="Featured Products" limit={4} order="asc" />
+    <ProductListPage title="Featured Products" limit={4} order="desc" />
 
     <section className="bg-[#f7f5f1] py-16 sm:py-20 lg:py-24" aria-labelledby="home-categories-title">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
