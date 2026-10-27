@@ -9,21 +9,26 @@ import { ordersRouter } from "./routes/orders.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 5000);
-const serverDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const serverDirectory = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+);
 
 app.use(express.json());
 app.use((req, _res, next) => {
   const cookieHeader = req.headers.cookie ?? "";
-  req.cookies = Object.fromEntries(cookieHeader.split(";").flatMap((cookie) => {
-    const separator = cookie.indexOf("=");
-    if (separator < 0) return [];
-    const name = cookie.slice(0, separator).trim();
-    try {
-      return [[name, decodeURIComponent(cookie.slice(separator + 1).trim())]];
-    } catch {
-      return [];
-    }
-  }));
+  req.cookies = Object.fromEntries(
+    cookieHeader.split(";").flatMap((cookie) => {
+      const separator = cookie.indexOf("=");
+      if (separator < 0) return [];
+      const name = cookie.slice(0, separator).trim();
+      try {
+        return [[name, decodeURIComponent(cookie.slice(separator + 1).trim())]];
+      } catch {
+        return [];
+      }
+    }),
+  );
   next();
 });
 app.use("/uploads", express.static(path.join(serverDirectory, "uploads")));
@@ -46,9 +51,19 @@ app.use("/api/auth", authRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/orders", ordersRouter);
 
+const clientDist = path.resolve(serverDirectory, "../client/dist");
+app.use(express.static(clientDist));
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api") || req.path.startsWith("/uploads"))
+    return next();
+  res.sendFile(path.join(clientDist, "index.html"));
+});
+
 app.use((error, _req, res, _next) => {
   console.error(error);
-  res.status(500).json({ message: "The server could not complete that request." });
+  res
+    .status(500)
+    .json({ message: "The server could not complete that request." });
 });
 
 app.listen(port, () => {
